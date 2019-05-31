@@ -1,0 +1,77 @@
+{
+  "tournamentName": "Backgammon Tournament",
+  "pointsToWinGame": 11,
+  "players": [
+    {
+      "name": "Josh",
+      "rank": 1,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "totalPoints": 0
+    },
+    {
+      "name": "Mark",
+      "rank": 1,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "totalPoints": 0
+    },
+    {
+      "name": "Victoria",
+      "rank": 1,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "totalPoints": 0
+    },
+    {
+      "name": "Freya",
+      "rank": 1,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "totalPoints": 0
+    },
+    {
+      "name": "Oliver",
+      "rank": 1,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "totalPoints": 0
+    },
+
+    {
+      "name": "Ellie",
+      "rank": 1,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "totalPoints": 0
+    },
+    {
+      "name": "Alice",
+      "rank": 1,
+      "gamesPlayed": 0,
+      "gamesWon": 0,
+      "gamesLost": 0,
+      "totalPoints": 0
+    }
+  ],
+  "matches": [
+    {
+      "contestantOne": "Joshua",
+      "contestantTwo": "Oliver",
+      "contestantOnePoints": 0,
+      "contestantTwoPoints": 0
+    },
+    {
+    "contestantOne":"Joshua",
+    "contestantTwo":"Dominic",
+    "contestantOnePoints":0,
+    "contestantTwoPoints":0
+    }
+  ]
+}

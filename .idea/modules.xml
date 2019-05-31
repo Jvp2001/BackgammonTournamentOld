@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BackgammonTournament.iml" filepath="$PROJECT_DIR$/BackgammonTournament.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BackgammonTournamentComponents/BackgammonTournamentComponents.iml" filepath="$PROJECT_DIR$/BackgammonTournamentComponents/BackgammonTournamentComponents.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BackgammonTournamentData/BackgammonTournamentData.iml" filepath="$PROJECT_DIR$/BackgammonTournamentData/BackgammonTournamentData.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.joshuapetersen.backgammontournament.ui.components.*?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+         prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121"
+         xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <tabs>
+        <Tab text="RankingsTable">
+            <content>
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <BackgammonTournamentTable/>
+                        <VBox>
+                            <children>
+                                <Label text="Matches" styleClass="TableTitle" stylesheets="../../../../BackgammonTournamentComponents/resources/stylesheets/DefaultTableStyles.css"></Label>
+                                <CurrentMatchesTable></CurrentMatchesTable>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>
