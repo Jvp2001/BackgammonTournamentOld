@@ -12,7 +12,8 @@ public class MatchInfo
 
     private SimpleStringProperty contestantOne,contestantTwo;
     private SimpleIntegerProperty contestantOnePoints, contestantTwoPoints;
-    private SimpleBooleanProperty gameFinished = new SimpleBooleanProperty();
+    private boolean gameFinished = false;
+
     private transient SimpleStringProperty winner = new SimpleStringProperty();
     private transient SimpleObjectProperty<MatchWonBy> wonBy = new SimpleObjectProperty<>(MatchWonBy.NONE);
 
@@ -24,15 +25,15 @@ public class MatchInfo
         this.contestantTwoPoints = new SimpleIntegerProperty(contestantTwoPoints);
         this.contestantOnePoints.addListener((observable, oldValue, newValue) ->
         {
-           if(TournamentRules.wonGame(newValue.intValue()) && wonBy.get() == MatchWonBy.NONE)
-           {
-               wonBy.set(MatchWonBy.CONTESTENT_ONE);
-               gameFinished.set(true);
-           }
+            if (TournamentRules.wonGame(newValue.intValue()) && wonBy.get() == MatchWonBy.NONE)
+            {
+                wonBy.set(MatchWonBy.CONTESTENT_ONE);
+                gameFinished.set(true);
+            }
 
             Player player = DataManager.getBackgammonTournamentData().findPlayer(contestantOne);
-            player.setTotalPoints(player.getTotalPoints()+newValue.intValue());
-            System.out.println("Total Points: "+player.getTotalPoints());
+            player.setTotalPoints(player.getTotalPoints() + newValue.intValue());
+            System.out.println("Total Points: " + player.getTotalPoints());
 
             // TODO update contestants overall points.
         });
@@ -44,13 +45,13 @@ public class MatchInfo
             }
 
             Player player = DataManager.getBackgammonTournamentData().findPlayer(contestantTwo);
-            player.setTotalPoints(player.getTotalPoints()+newValue.intValue());
+            player.setTotalPoints(player.getTotalPoints() + newValue.intValue());
             // TODO update contestants overall points.
         });
         this.wonBy.addListener((observable, oldValue, newValue) ->
         {
             //TODO update the overall number of matches the contestant has won.
-            if(newValue == null) return;
+            if (newValue == null) return;
             switch (newValue)
             {
                 case CONTESTENT_ONE:
@@ -63,10 +64,6 @@ public class MatchInfo
                     winner.set("");
                     break;
             }
-        });
-        this.gameFinished.addListener(observable ->
-        {
-            this.gameFinished.set(wonBy.getValue() != MatchWonBy.NONE);
         });
     }
 
@@ -131,10 +128,7 @@ public class MatchInfo
         this.contestantTwoPoints.set(contestantTwoPoints);
     }
 
-    public void setGameFinished(boolean gameFinished)
-    {
-        this.gameFinished.set(gameFinished);
-    }
+
 
     public String getWinner()
     {
@@ -168,14 +162,13 @@ public class MatchInfo
 
     public boolean isGameFinished()
     {
-        return gameFinished.get();
-    }
-
-    public SimpleBooleanProperty gameFinishedProperty()
-    {
         return gameFinished;
     }
 
+    public void setGameFinished(boolean gameFinished)
+    {
+        this.gameFinished = gameFinished;
+    }
 
     @Override
     public String toString()

@@ -97,14 +97,14 @@ public class CurrentMatchesTable extends TableView<MatchInfo>
             public void updateItem(Boolean item, boolean empty)
             {
                 super.updateItem(item, empty);
-
-                if(!empty)
-                {
-
-                    int pointsOne = Integer.parseInt(opponentOnePoints.get());
-                    int pointsTwo = Integer.parseInt(opponentTwoPoints.getText());
-                    this.setItem(TournamentRules.wonGame(pointsOne) || TournamentRules.wonGame(pointsTwo));
-                }
+//
+//                if(!empty)
+//                {
+//
+//                    int pointsOne = Integer.parseInt(opponentOnePoints.get());
+//                    int pointsTwo = Integer.parseInt(opponentTwoPoints.getText());
+//                    this.setItem(TournamentRules.wonGame(pointsOne) || TournamentRules.wonGame(pointsTwo));
+//                }
             }
         });
         setupColumn(wonByTableColumn, "wonBy", false);
