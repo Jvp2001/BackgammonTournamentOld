@@ -3,14 +3,19 @@ package com.joshuapetersen.backgammontournament.ui.components;
 import com.google.gson.Gson;
 import com.joshuapetersen.backgammontournament.data.MatchInfo;
 import com.joshuapetersen.backgammontournament.data.MatchWonBy;
-import com.joshuapetersen.backgammontournament.data.TournamentRules;
 import com.joshuapetersen.backgammontournament.ui.utilities.TableViewUtilites;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
 import org.hildan.fxgson.FxGsonBuilder;
 
 public class CurrentMatchesTable extends TableView<MatchInfo>
@@ -23,8 +28,8 @@ public class CurrentMatchesTable extends TableView<MatchInfo>
 
     private TableColumn<MatchInfo, Integer> pointsColumn = new TableColumn<>("Points");
     //TODO Add change listeners to cell values for the point columns.
-    private TableColumn<MatchInfo, String> opponentOnePoints = new TableColumn<>("Opponent One");
-    private TableColumn<MatchInfo, String> opponentTwoPoints = new TableColumn<>("Opponent Two");
+    private TableColumn opponentOnePoints = new PointsTableColumn("Opponent One", MatchWonBy.CONTESTENT_ONE);
+    private TableColumn opponentTwoPoints = new PointsTableColumn("Opponent One", MatchWonBy.CONTESTENT_TWO);
 
     private TableColumn<MatchInfo, Boolean> gameFinishedColumn = new TableColumn<>("Finished");
     private TableColumn<MatchInfo, MatchWonBy> wonByTableColumn = new TableColumn<>("Won By");
@@ -51,67 +56,53 @@ public class CurrentMatchesTable extends TableView<MatchInfo>
         data.addAll(matchInfo);
         //setup table
         final TableView<MatchInfo> resultsTable = this;
-
         resultsTable.setEditable(true);
-        resultsTable.getColumns().setAll(opponentNameColumn, pointsColumn, gameFinishedColumn);
+        resultsTable.getColumns().setAll(opponentNameColumn, pointsColumn, gameFinishedColumn, wonByTableColumn);
         resultsTable.setItems(data);
         resultsTable.setTableMenuButtonVisible(true);
         resultsTable.getStylesheets().setAll(getClass().getClassLoader().getResource(
                 "stylesheets/DefaultTableStyles.css").toExternalForm());
-       // GUIUtils.autoFitTable(this);
+        // GUIUtils.autoFitTable(this);
         //setup columns
         //setupColumn(rankColumn,"rank",false);
+        //TODO Get rid of oppent name columns being editable.
         setupColumn(opponentNameColumn, "", false);
         setupColumn(opponentOneNameColumn, "contestantOne", !false);
+        opponentOneNameColumn.setCellFactory(param -> new TextFieldTableCell<>());
         setupColumn(opponentTwoNameColumn, "contestantTwo", !false);
+        opponentTwoNameColumn.setCellFactory(param -> new TextFieldTableCell<>());
         opponentNameColumn.getColumns().addAll(opponentOneNameColumn, opponentTwoNameColumn);
 
         //GUIUtils.autoFitTable(this, opponentNameColumn);
-        setupColumn(pointsColumn, "", false);
-        setupColumn(opponentOnePoints, "", true, "Number");
-        opponentOnePoints.setCellValueFactory(param ->
-                new SimpleStringProperty(String.valueOf(param.getValue().getContestantOnePoints())));
-        opponentOnePoints.setCellFactory(param ->
-        {
-            IntegerEditingCell integerEditingCell = new IntegerEditingCell(MatchWonBy.CONTESTENT_ONE);
-            System.out.println("this."+integerEditingCell.getContestantType());
-            return integerEditingCell;
-        });
+        setupColumn(pointsColumn, "", true);
 
-        setupColumn(opponentTwoPoints, "", true, "Number");
-        opponentTwoPoints.setCellValueFactory(param ->
-                new SimpleStringProperty(String.valueOf(param.getValue().getContestantTwoPoints())));
-        opponentOnePoints.setCellFactory(param ->
-        {
-            IntegerEditingCell integerEditingCell = new IntegerEditingCell(MatchWonBy.CONTESTENT_TWO);
-            System.out.println("this."+integerEditingCell.getContestantType());
-            integerEditingCell.setContestantType(MatchWonBy.CONTESTENT_ONE);
-            return integerEditingCell;
-        });
+
         pointsColumn.getColumns().setAll(opponentOnePoints, opponentTwoPoints);
 
         setupColumn(gameFinishedColumn, "gameFinished", false);
-        gameFinishedColumn.setCellFactory(param -> new CheckBoxTableCell<MatchInfo, Boolean>()
+        gameFinishedColumn.setCellFactory(param ->
         {
-            @Override
-            public void updateItem(Boolean item, boolean empty)
+            CheckBoxTableCell<MatchInfo, Boolean> matchInfoBooleanCheckBoxTableCell = new CheckBoxTableCell<>();
+            matchInfoBooleanCheckBoxTableCell.setSelectedStateCallback(new Callback<Integer, ObservableValue<Boolean>>()
             {
-                super.updateItem(item, empty);
-//
-//                if(!empty)
-//                {
-//
-//                    int pointsOne = Integer.parseInt(opponentOnePoints.get());
-//                    int pointsTwo = Integer.parseInt(opponentTwoPoints.getText());
-//                    this.setItem(TournamentRules.wonGame(pointsOne) || TournamentRules.wonGame(pointsTwo));
-//                }
-            }
+                @Override
+                public ObservableValue<Boolean> call(Integer param)
+                {
+
+                    return new SimpleBooleanProperty(getItems().get(param).getGameFinished());
+                }
+            });
+
+            return matchInfoBooleanCheckBoxTableCell;
         });
+
         setupColumn(wonByTableColumn, "wonBy", false);
 
         resultsTable.refresh();
+
         System.out.println(resultsTable.getItems().get(0));
     }
+
     private <T> void setupColumn(TableColumn<MatchInfo, T> tableColumn, String propertyName, boolean editable,
             String... cssClasses)
     {

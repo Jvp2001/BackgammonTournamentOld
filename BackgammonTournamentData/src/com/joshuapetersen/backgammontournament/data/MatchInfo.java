@@ -1,6 +1,5 @@
 package com.joshuapetersen.backgammontournament.data;
 
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,10 +11,10 @@ public class MatchInfo
 
     private SimpleStringProperty contestantOne,contestantTwo;
     private SimpleIntegerProperty contestantOnePoints, contestantTwoPoints;
-    private boolean gameFinished = false;
+    private transient boolean gameFinished;
 
-    private transient SimpleStringProperty winner = new SimpleStringProperty();
-    private transient SimpleObjectProperty<MatchWonBy> wonBy = new SimpleObjectProperty<>(MatchWonBy.NONE);
+    private transient SimpleStringProperty winner;
+    private transient SimpleObjectProperty<MatchWonBy> wonBy;
 
     public MatchInfo(String contestantOne, String contestantTwo, int contestantOnePoints, int contestantTwoPoints)
     {
@@ -23,31 +22,30 @@ public class MatchInfo
         this.contestantTwo = new SimpleStringProperty(contestantTwo);
         this.contestantOnePoints = new SimpleIntegerProperty(contestantOnePoints);
         this.contestantTwoPoints = new SimpleIntegerProperty(contestantTwoPoints);
+
+        checkForGameFinished();
+
         this.contestantOnePoints.addListener((observable, oldValue, newValue) ->
         {
-            if (TournamentRules.wonGame(newValue.intValue()) && wonBy.get() == MatchWonBy.NONE)
+            int value = (int) (newValue != null ? newValue : oldValue);
+            System.out.println("Property cahnged");
+            if(TournamentRules.wonGame(value))
             {
-                wonBy.set(MatchWonBy.CONTESTENT_ONE);
-                gameFinished.set(true);
+                System.out.println("Game finished");
+                gameFinished = true;
             }
 
-            Player player = DataManager.getBackgammonTournamentData().findPlayer(contestantOne);
-            player.setTotalPoints(player.getTotalPoints() + newValue.intValue());
-            System.out.println("Total Points: " + player.getTotalPoints());
-
-            // TODO update contestants overall points.
-        });
-        this.contestantTwoPoints.addListener((observable, oldValue, newValue) ->
+        });this.contestantTwoPoints.addListener((observable, oldValue, newValue) ->
         {
-            if (TournamentRules.wonGame(observable.getValue().intValue()) && wonBy.getValue() == MatchWonBy.NONE)
+            int value = (int) (newValue != null ? newValue : oldValue);
+            if(TournamentRules.wonGame(value))
             {
-                wonBy.set(MatchWonBy.CONTESTENT_TWO);
+                gameFinished = true;
             }
-
-            Player player = DataManager.getBackgammonTournamentData().findPlayer(contestantTwo);
-            player.setTotalPoints(player.getTotalPoints() + newValue.intValue());
-            // TODO update contestants overall points.
         });
+
+        winner = new SimpleStringProperty();
+        wonBy = new SimpleObjectProperty<>(MatchWonBy.NONE);
         this.wonBy.addListener((observable, oldValue, newValue) ->
         {
             //TODO update the overall number of matches the contestant has won.
@@ -65,6 +63,11 @@ public class MatchInfo
                     break;
             }
         });
+    }
+
+    public void checkForGameFinished()
+    {
+        this.gameFinished = TournamentRules.wonGame(this.contestantOnePoints.get()) || TournamentRules.wonGame(this.getContestantTwoPoints());
     }
 
 
@@ -160,7 +163,7 @@ public class MatchInfo
         this.wonBy.set(wonBy);
     }
 
-    public boolean isGameFinished()
+    public boolean getGameFinished()
     {
         return gameFinished;
     }

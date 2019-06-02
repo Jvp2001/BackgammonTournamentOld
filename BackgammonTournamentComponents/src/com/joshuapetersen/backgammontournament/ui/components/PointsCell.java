@@ -9,15 +9,16 @@ import javafx.scene.control.TextField;
 import java.util.regex.Pattern;
 
 /**
- *
  * Code base on <a herf="https://stackoverflow.com/questions/27900344/how-to-make-a-table-column-with-String-datatype-editable-without-changing-it-to">James_D</a> code.
  */
-public class IntegerEditingCell extends TableCell<MatchInfo, String>
+public class PointsCell extends TableCell<MatchInfo, String>
 {
 
     private final TextField textField = new TextField();
     private final Pattern intPattern = Pattern.compile("-?\\d+");
-    /**Taken from <a herf="https://stackoverflow.com/questions/11009320/validate-mathematical-expressions-using-regular-expression">Kapa and p.s.w.g</a>**/
+    /**
+     * Taken from <a herf="https://stackoverflow.com/questions/11009320/validate-mathematical-expressions-using-regular-expression">Kapa and p.s.w.g</a>
+     **/
     private final Pattern exprPattern = Pattern.compile("/^(\\\\d+)\\\\s*([+\\-*\\\\/])\\\\s*(\\\\d+)$/\n");
     private MatchWonBy contestantType = MatchWonBy.NONE;
 
@@ -31,7 +32,7 @@ public class IntegerEditingCell extends TableCell<MatchInfo, String>
         return contestantType;
     }
 
-    public IntegerEditingCell(MatchWonBy contestantType)
+    public PointsCell(MatchWonBy contestantType)
     {
         this.contestantType = contestantType;
         textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) ->
@@ -54,7 +55,7 @@ public class IntegerEditingCell extends TableCell<MatchInfo, String>
         else
         {
             Integer floor = Math.toIntExact(Math.round(Calculator.eval(text)));
-            System.out.println(contestantType +": "+floor);
+            System.out.println(contestantType + ": " + floor);
             commitEdit(floor.toString());
         }
     }
@@ -108,20 +109,37 @@ public class IntegerEditingCell extends TableCell<MatchInfo, String>
     public void commitEdit(String value)
     {
         super.commitEdit(value);
+        MatchInfo matchInfo = (MatchInfo) this.getTableRow().getItem();
         switch (this.contestantType)
         {
             case CONTESTENT_ONE:
-                ((MatchInfo) this.getTableRow().getItem()).setContestantOnePoints(Integer.parseInt(value));
-                System.out.println(contestantType);
+                matchInfo.setContestantOnePoints(Integer.parseInt(value));
+                matchInfo.checkForGameFinished();
+                debugInfo(matchInfo);
+
+
                 break;
             case CONTESTENT_TWO:
-                ((MatchInfo) this.getTableRow().getItem()).setContestantTwoPoints(Integer.parseInt(value));
-                System.out.println(contestantType);
+                matchInfo.setContestantTwoPoints(Integer.parseInt(value));
+                matchInfo.checkForGameFinished();
+                debugInfo(matchInfo);
                 break;
             case NONE:
                 break;
 
         }
+        getTableView().refresh();
+
     }
+
+    private void debugInfo(MatchInfo matchInfo)
+    {
+        System.out.println("Points 1: " + matchInfo.getContestantOnePoints());
+        System.out.println("Points 2: " + matchInfo.getContestantTwoPoints());
+        System.out.println("Finished: " + matchInfo.getGameFinished());
+        System.out.println("Row Finished: " + ((MatchInfo) getTableRow().getItem()).getGameFinished());
+        System.out.println("\n");
+    }
+
 }
 
