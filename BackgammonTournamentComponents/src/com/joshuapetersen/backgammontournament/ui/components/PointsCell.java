@@ -2,9 +2,13 @@ package com.joshuapetersen.backgammontournament.ui.components;
 
 import com.joshuapetersen.backgammontournament.data.MatchInfo;
 import com.joshuapetersen.backgammontournament.data.MatchWonBy;
+import com.joshuapetersen.backgammontournament.data.TournamentRules;
 import com.joshuapetersen.backgammontournament.ui.utilities.Calculator;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.css.PseudoClass;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 
 import java.util.regex.Pattern;
 
@@ -32,6 +36,10 @@ public class PointsCell extends TableCell<MatchInfo, String>
         return contestantType;
     }
 
+    public MatchInfo getMatchInfo()
+    {
+        return (MatchInfo) this.getTableRow().getItem();
+    }
     public PointsCell(MatchWonBy contestantType)
     {
         this.contestantType = contestantType;
@@ -42,8 +50,11 @@ public class PointsCell extends TableCell<MatchInfo, String>
                 processEdit();
             }
         });
+
         textField.setOnAction(event -> processEdit());
+
     }
+
 
     private void processEdit()
     {
@@ -116,27 +127,63 @@ public class PointsCell extends TableCell<MatchInfo, String>
                 matchInfo.setContestantOnePoints(Integer.parseInt(value));
                 matchInfo.checkForGameFinished();
                 debugInfo(matchInfo);
-
+                hideRow();
 
                 break;
             case CONTESTENT_TWO:
                 matchInfo.setContestantTwoPoints(Integer.parseInt(value));
                 matchInfo.checkForGameFinished();
+                matchInfo.setWinner(matchInfo.getContestantTwo());
+                stopEditing(matchInfo);
                 debugInfo(matchInfo);
+                hideRow();
                 break;
             case NONE:
                 break;
 
         }
+        stopEditing(matchInfo);
         getTableView().refresh();
 
+    }
+    private void hideRow()
+    {
+        getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"),true);
+        getTableView().getItems().remove(getMatchInfo());
+    }
+
+    private void stopEditing(MatchInfo matchInfo)
+    {
+        boolean stopEditing  = matchInfo.getGameFinished() && TournamentRules.wonGame(matchInfo.getContestantOnePoints()) || TournamentRules.wonGame(matchInfo.getContestantTwoPoints());
+        this.setEditable(!matchInfo.getGameFinished());
+        this.getTableColumn().setEditable(!stopEditing);
+    }
+
+    public void setupUpToolTip()
+    {
+        MatchInfo matchInfo = (MatchInfo) this.getTableRow().getItem();
+        switch (contestantType)
+        {
+
+            case CONTESTENT_ONE:
+                Tooltip.install(this,new Tooltip(matchInfo.getContestantOne()));
+                break;
+            case CONTESTENT_TWO:
+                Tooltip.install(this,new Tooltip(matchInfo.getContestantTwo()));
+                break;
+            case NONE:
+                break;
+        }
     }
 
     private void debugInfo(MatchInfo matchInfo)
     {
+
+        System.out.println("Player 2: "+ matchInfo.getContestantTwo());
         System.out.println("Points 1: " + matchInfo.getContestantOnePoints());
         System.out.println("Points 2: " + matchInfo.getContestantTwoPoints());
-        System.out.println("Finished: " + matchInfo.getGameFinished());
+        System.out.println("Finished: "+ matchInfo.getGameFinished());
+        System.out.println("Winnder: "+ matchInfo.getWinner());
         System.out.println("Row Finished: " + ((MatchInfo) getTableRow().getItem()).getGameFinished());
         System.out.println("\n");
     }

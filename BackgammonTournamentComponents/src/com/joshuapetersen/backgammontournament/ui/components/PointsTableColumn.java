@@ -2,7 +2,11 @@ package com.joshuapetersen.backgammontournament.ui.components;
 
 import com.joshuapetersen.backgammontournament.data.MatchInfo;
 import com.joshuapetersen.backgammontournament.data.MatchWonBy;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 
 public class PointsTableColumn extends AutoUpdateColumn<MatchInfo,String>
 {
@@ -23,19 +27,20 @@ public class PointsTableColumn extends AutoUpdateColumn<MatchInfo,String>
         setup();
     }
 
+
     @Override
     protected void setup()
     {
         super.setup();
+        //this.getTableView().getStylesheets().setAll(getClass().getClassLoader().getResource("stylesheets/DefaultTableStyles.css").toExternalForm());
         this.getStyleClass().setAll("Numbers");
 
-        this.setCellFactory(tc -> new PointsCell(contestant));
+        this.setCellFactory(this::call);
         switch (contestant)
         {
 
             case CONTESTENT_ONE:
                 this.setCellValueFactory(param -> new SimpleStringProperty(String.valueOf(param.getValue().getContestantOnePoints())));
-
                 break;
             case CONTESTENT_TWO:
                 this.setCellValueFactory(param -> new SimpleStringProperty(String.valueOf(param.getValue().getContestantTwoPoints())));
@@ -83,5 +88,11 @@ public class PointsTableColumn extends AutoUpdateColumn<MatchInfo,String>
                 break;
         }
         this.getTableView().refresh();
+    }
+
+    private TableCell<MatchInfo, String> call(TableColumn<MatchInfo, String> tc)
+    {
+        PointsCell pointsCell = new PointsCell(contestant);
+        return pointsCell;
     }
 }

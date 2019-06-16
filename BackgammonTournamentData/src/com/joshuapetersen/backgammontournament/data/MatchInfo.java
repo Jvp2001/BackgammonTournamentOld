@@ -1,7 +1,7 @@
 package com.joshuapetersen.backgammontournament.data;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class MatchInfo
@@ -9,12 +9,13 @@ public class MatchInfo
 
     //TODO make sure 11 cannot in tie break.
 
-    private SimpleStringProperty contestantOne,contestantTwo;
+    private SimpleStringProperty contestantOne, contestantTwo;
     private SimpleIntegerProperty contestantOnePoints, contestantTwoPoints;
     private transient boolean gameFinished;
+    private transient SimpleBooleanProperty gameFinishedProperty;
 
-    private transient SimpleStringProperty winner;
-    private transient SimpleObjectProperty<MatchWonBy> wonBy;
+    private transient String winner;
+    private transient MatchWonBy wonBy;
 
     public MatchInfo(String contestantOne, String contestantTwo, int contestantOnePoints, int contestantTwoPoints)
     {
@@ -23,55 +24,71 @@ public class MatchInfo
         this.contestantOnePoints = new SimpleIntegerProperty(contestantOnePoints);
         this.contestantTwoPoints = new SimpleIntegerProperty(contestantTwoPoints);
 
+
         checkForGameFinished();
 
+        this.gameFinishedProperty = new SimpleBooleanProperty(this.gameFinished);
         this.contestantOnePoints.addListener((observable, oldValue, newValue) ->
         {
             int value = (int) (newValue != null ? newValue : oldValue);
             System.out.println("Property cahnged");
-            if(TournamentRules.wonGame(value))
+            if (TournamentRules.wonGame(value))
             {
                 System.out.println("Game finished");
                 gameFinished = true;
             }
 
-        });this.contestantTwoPoints.addListener((observable, oldValue, newValue) ->
+        });
+        this.contestantTwoPoints.addListener((observable, oldValue, newValue) ->
         {
             int value = (int) (newValue != null ? newValue : oldValue);
-            if(TournamentRules.wonGame(value))
+            if (TournamentRules.wonGame(value))
             {
                 gameFinished = true;
             }
         });
 
-        winner = new SimpleStringProperty();
-        wonBy = new SimpleObjectProperty<>(MatchWonBy.NONE);
-        this.wonBy.addListener((observable, oldValue, newValue) ->
-        {
-            //TODO update the overall number of matches the contestant has won.
-            if (newValue == null) return;
-            switch (newValue)
-            {
-                case CONTESTENT_ONE:
-                    winner.set(this.contestantOne.getValue());
-                    break;
-                case CONTESTENT_TWO:
-                    winner.set(this.contestantTwo.getValue());
-                    break;
-                case NONE:
-                    winner.set("");
-                    break;
-            }
-        });
+        winner = getContestantTwo();
+        wonBy = MatchWonBy.CONTESTENT_TWO;
+
     }
+
+    public boolean gameFinishedPropertyProperty()
+    {
+        return gameFinishedProperty.get();
+    }
+
+    public void setGameFinishedProperty(boolean gameFinishedProperty)
+    {
+        this.gameFinishedProperty.set(gameFinishedProperty);
+    }
+
 
     public void checkForGameFinished()
     {
-        this.gameFinished = TournamentRules.wonGame(this.contestantOnePoints.get()) || TournamentRules.wonGame(this.getContestantTwoPoints());
+        this.gameFinished = TournamentRules.wonGame(this.contestantOnePoints.get()) || TournamentRules.wonGame(
+                this.getContestantTwoPoints());
+        if (TournamentRules.wonGame(this.getContestantOnePoints()))
+        {
+            this.wonBy = MatchWonBy.CONTESTENT_ONE;
+            winner = this.getContestantOne();
+        }
+        else if (TournamentRules.wonGame(this.contestantTwoPoints.get()))
+        {
+            System.out.println("TWO!");
+            this.wonBy = MatchWonBy.CONTESTENT_TWO;
+            this.winner = this.contestantTwo.getName();
+        }
+        else
+        {
+            this.wonBy = MatchWonBy.NONE;
+        }
+            System.out.println(this.winner);
+            System.out.println(winner);
     }
 
-
     public String getContestantOne()
+
     {
         return contestantOne.get();
     }
@@ -132,35 +149,24 @@ public class MatchInfo
     }
 
 
-
     public String getWinner()
-    {
-        return winner.get();
-    }
-
-    public SimpleStringProperty winnerProperty()
     {
         return winner;
     }
 
     public void setWinner(String winner)
     {
-        this.winner.set(winner);
+        this.winner = winner;
     }
 
     public MatchWonBy getWonBy()
-    {
-        return wonBy.get();
-    }
-
-    public SimpleObjectProperty<MatchWonBy> wonByProperty()
     {
         return wonBy;
     }
 
     public void setWonBy(MatchWonBy wonBy)
     {
-        this.wonBy.set(wonBy);
+        this.wonBy = wonBy;
     }
 
     public boolean getGameFinished()

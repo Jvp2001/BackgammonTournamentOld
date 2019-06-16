@@ -11,5 +11,6 @@
     <orderEntry type="module" module-name="BackgammonTournamentData" />
     <orderEntry type="library" name="Maven: org.hildan.fxgson:fx-gson:3.1.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
+    <orderEntry type="library" name="Maven: org.fxmisc.easybind:easybind:1.0.3" level="project" />
   </component>
 </module>

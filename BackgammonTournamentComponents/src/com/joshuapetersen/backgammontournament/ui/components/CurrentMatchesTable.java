@@ -1,6 +1,7 @@
 package com.joshuapetersen.backgammontournament.ui.components;
 
 import com.google.gson.Gson;
+import com.joshuapetersen.backgammontournament.data.DataManager;
 import com.joshuapetersen.backgammontournament.data.MatchInfo;
 import com.joshuapetersen.backgammontournament.data.MatchWonBy;
 import com.joshuapetersen.backgammontournament.ui.utilities.TableViewUtilites;
@@ -29,10 +30,10 @@ public class CurrentMatchesTable extends TableView<MatchInfo>
     private TableColumn<MatchInfo, Integer> pointsColumn = new TableColumn<>("Points");
     //TODO Add change listeners to cell values for the point columns.
     private TableColumn opponentOnePoints = new PointsTableColumn("Opponent One", MatchWonBy.CONTESTENT_ONE);
-    private TableColumn opponentTwoPoints = new PointsTableColumn("Opponent One", MatchWonBy.CONTESTENT_TWO);
+    private TableColumn opponentTwoPoints = new PointsTableColumn("Opponent Two", MatchWonBy.CONTESTENT_TWO);
 
     private TableColumn<MatchInfo, Boolean> gameFinishedColumn = new TableColumn<>("Finished");
-    private TableColumn<MatchInfo, MatchWonBy> wonByTableColumn = new TableColumn<>("Won By");
+    private TableColumn<MatchInfo, String> wonByTableColumn = new TableColumn<>("Won By");
     private ObservableList<MatchInfo> data = FXCollections.observableArrayList();
 
     private SimpleStringProperty contestantName = new SimpleStringProperty("Joshua");
@@ -53,8 +54,9 @@ public class CurrentMatchesTable extends TableView<MatchInfo>
                 "\"contestantOnePoints\":0," +
                 "\"contestantTwoPoints\":0" +
                 "}", MatchInfo.class);
-        data.addAll(matchInfo);
+        data.addAll(DataManager.getMatches());
         //setup table
+
         final TableView<MatchInfo> resultsTable = this;
         resultsTable.setEditable(true);
         resultsTable.getColumns().setAll(opponentNameColumn, pointsColumn, gameFinishedColumn, wonByTableColumn);
@@ -95,9 +97,7 @@ public class CurrentMatchesTable extends TableView<MatchInfo>
 
             return matchInfoBooleanCheckBoxTableCell;
         });
-
-        setupColumn(wonByTableColumn, "wonBy", false);
-
+        setupColumn(wonByTableColumn, "winner", false);
         resultsTable.refresh();
 
         System.out.println(resultsTable.getItems().get(0));

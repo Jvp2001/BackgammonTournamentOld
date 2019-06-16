@@ -34,7 +34,8 @@ public class BackgammonTournamentTable extends TableView<Player>
 
         //setup table
         TableView<Player> resultsTable = this;
-
+        resultsTable.getStylesheets().setAll(getClass().getClassLoader().getResource(
+                "stylesheets/DefaultTableStyles.css").toExternalForm());
         resultsTable.setEditable(true);
         resultsTable.getColumns().setAll(nameColumn, gamesWonColumn, totalPointsColumn);
         data = FXCollections.observableArrayList(DataManager.getBackgammonTournamentData().getPlayers());
