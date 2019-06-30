@@ -14,10 +14,6 @@ public class MatchTableRow extends TableRow<MatchInfo>
     {
         super();
 
-        this.disableProperty().bind(
-                EasyBind.select(this.itemProperty())
-                .selectObject(MatchInfo::getGameFinished)
-                .orElse(null)
-        );
+
     }
 }

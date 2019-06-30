@@ -1,5 +1,6 @@
 package com.joshuapetersen.backgammontournament.ui.components;
 
+import com.joshuapetersen.backgammontournament.data.GlobalData;
 import com.joshuapetersen.backgammontournament.data.MatchInfo;
 import com.joshuapetersen.backgammontournament.data.MatchWonBy;
 import com.joshuapetersen.backgammontournament.data.TournamentRules;
@@ -127,7 +128,7 @@ public class PointsCell extends TableCell<MatchInfo, String>
                 matchInfo.setContestantOnePoints(Integer.parseInt(value));
                 matchInfo.checkForGameFinished();
                 debugInfo(matchInfo);
-                hideRow();
+                transferRow();
 
                 break;
             case CONTESTENT_TWO:
@@ -136,7 +137,7 @@ public class PointsCell extends TableCell<MatchInfo, String>
                 matchInfo.setWinner(matchInfo.getContestantTwo());
                 stopEditing(matchInfo);
                 debugInfo(matchInfo);
-                hideRow();
+                transferRow();
                 break;
             case NONE:
                 break;
@@ -146,10 +147,12 @@ public class PointsCell extends TableCell<MatchInfo, String>
         getTableView().refresh();
 
     }
-    private void hideRow()
+    private void transferRow()
     {
-        getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"),true);
-        getTableView().getItems().remove(getMatchInfo());
+        MatchInfo matchInfo = getMatchInfo();
+        getTableView().getItems().remove(matchInfo);
+        if(!GlobalData.finishedGames.contains(matchInfo))
+            GlobalData.finishedGames.add(matchInfo);
     }
 
     private void stopEditing(MatchInfo matchInfo)
